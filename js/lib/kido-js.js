@@ -57,9 +57,9 @@ var Kido = function (name, marketplace) {
      * @api public
      */
     this.authenticate = function () {
-        if (this.hosted) return $.Deferred().reject("No need to authenticate to this Web App");
+        if (self.hosted) return $.Deferred().reject("No need to authenticate to this Web App");
         var authArgs = arguments;
-        this.token = this.authConfig.then(function (config) {
+        self.token = self.authConfig.then(function (config) {
             if (authArgs.length === 0) {
                 return passiveAuth(config);
             }
@@ -73,7 +73,7 @@ var Kido = function (name, marketplace) {
 
             return activeAuth(config, authArgs[0], authArgs[1], authArgs[2], ip);
         });
-        return this.token;
+        return self.token;
     };
 
     /**
@@ -102,7 +102,11 @@ var Kido = function (name, marketplace) {
                     // if the token expired, then user the cached credentials
                     // to refresh the KidoZen token.
                     if (token.expiresOn < new Date().getTime()) {
-                        return self.authenticate(_username, _password, _provider);
+                        if (_username && _password && _provider) {
+                            return self.authenticate(_username, _password, _provider);
+                        } else {
+                            return self.authenticate();
+                        }
                     }
                     return token;
                 })
@@ -238,6 +242,7 @@ var Kido = function (name, marketplace) {
                     if (!token || (!token.access_token && !token.rawToken)) {
                         return deferred.reject('Unable to retrieve KidoZen token.');
                     }
+                    self.authenticated = true;
                     deferred.resolve(processToken(token));
                 }
             });
@@ -822,7 +827,7 @@ Kido.prototype.sms = function() {
  * You can use this through the storage() helper in Kido.
  * ie: var tasks = new Kido().storage().objectSet("tasks");
  *
- * @param kidoApp
+ * @param {Kido} kidoApp
  * @returns {KidoStorage}
  * @constructor
  */
@@ -939,7 +944,7 @@ var KidoObjectSet = function (name, parentStorage, caching) {
             isPrivate: isPrivate
         };
 
-        return self.invoke(data).pipe(function (result) {
+        return self.invoke(data).then(function (result) {
             return $.extend(obj, result);
         });
     };
@@ -966,7 +971,7 @@ var KidoObjectSet = function (name, parentStorage, caching) {
 
         return self
             .invoke(data)
-            .pipe(function (result) {
+            .then(function (result) {
                 return $.extend(obj, result);
             }, function (err) {
 
@@ -1924,7 +1929,13 @@ var KidoOffline = function (kidoApp) {
             ajax = $.ajax(settings);
         if (getAll || insert || update) {
             ajax.then(function (val) {
-                return collection.persist(val);
+                if ($.isArray(val)) {
+                    return collection.persist(val);
+                } else if (typeof val === 'object') {
+                    object._id = val._id ? val._id : null;
+                    object._metadata = val._metadata ? val._metadata : null;
+                    return collection.persist(object);
+                }
             });
         } else if (remove) {
             ajax.then(function () {
