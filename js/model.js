@@ -2,7 +2,7 @@ var Model = function () {
 
     /** Private variables **/
     var kido = new Kido(),
-        tasksSet = kido.storage().objectSet("tasks", true),
+        tasksSet = kido.storage().objectSet("tasks", { caching: true, queueing: true }),
         logging = kido.logging();
 
     return {
