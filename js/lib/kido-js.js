@@ -1569,7 +1569,7 @@ var KidoDatasource = function (kidoApp, name, options) {
             service: self.SERVICE_NAME,
             collection: self.name,
             caching: self.caching,
-            queueing: self.queueing
+            queueing: false
         };
 
         self.app
@@ -1602,7 +1602,7 @@ var KidoDatasource = function (kidoApp, name, options) {
         settings.kidoService = {
             service: self.SERVICE_NAME,
             collection: self.name,
-            caching: self.caching,
+            caching: false,
             queueing: self.queueing
         };
 
