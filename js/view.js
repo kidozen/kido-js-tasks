@@ -68,7 +68,7 @@ var View = function ($) {
             $.each(logs, function (index, l) {
                 $("#logs").append(
                     '<li>' +
-                        l.userName + ': ' + l.data + ' at ' + l.dateTime +
+                        l.user + ': ' + l.data + ' at ' + l['@timestamp'] +
                     '</li>'
                 );
             });
