@@ -44,6 +44,6 @@ In order to run the app locally, you need to have a KidoZen account, and have
 the `kido` client tool installed (see the [docs](http://docs.kidozen.com/sdks/javascript/)
 for more information).
 
-# Important
+##Important
 
-jQuery version must be 1.7+
+**jQuery 1.8 or above is required**
